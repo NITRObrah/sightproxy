@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="sight.w - ur spot for everything">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>sight.w</title>
+  <link rel="icon" type="image/png" href="https://image2url.com/r2/default/images/1772114193046-733bfa71-77a7-4fdc-bce4-d3e8ebe17a29.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <img class="loading-logo" src="https://image2url.com/r2/default/images/1772114193046-733bfa71-77a7-4fdc-bce4-d3e8ebe17a29.png" alt="Logo">
+    <h1 class="loading-title">sight.w</h1>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+    <p class="loading-text">loading...</p>
+  </div>
+
+  <!-- Panic Overlay -->
+  <div class="panic-overlay" id="panicOverlay">
+    <i class="fas fa-graduation-cap"></i>
+    <span>Redirecting to Google Classroom...</span>
+  </div>
+
+  <!-- Stats Overlay -->
+  <div class="stats-overlay" id="statsOverlay">
+    <div class="stat-row"><span class="stat-label">FPS</span><span class="stat-value" id="fpsValue">60</span></div>
+    <div class="stat-row"><span class="stat-label">Ping</span><span class="stat-value" id="pingValue">--</span></div>
+    <div class="stat-row"><span class="stat-label">Battery</span><span class="stat-value" id="batteryValue">--</span></div>
+  </div>
+
+  <!-- App -->
+  <div class="app">
+    <button class="sidebar-open-btn" id="sidebarOpenBtn"><i class="fas fa-chevron-left"></i></button>
+    
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close-btn" id="sidebarCloseBtn"><i class="fas fa-chevron-right"></i></button>
+      
+      <div class="logo">
+        <img src="https://image2url.com/r2/default/images/1772114193046-733bfa71-77a7-4fdc-bce4-d3e8ebe17a29.png" alt="Logo">
+        <span class="logo-text">sight.w</span>
+      </div>
+
+      <div class="time-card">
+        <div class="time" id="time">00:00</div>
+        <div class="date" id="date">Monday, Jan 1</div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a class="nav-link active" id="homeLink"><i class="fas fa-house"></i> Home</a></li>
+        <li class="nav-item"><a class="nav-link" id="gamesLink"><i class="fas fa-gamepad"></i> Activities</a></li>
+        <li class="nav-item"><a class="nav-link" id="moviesLink"><i class="fas fa-clapperboard"></i> Movies</a></li>
+        <li class="nav-item"><a class="nav-link" id="browserLink"><i class="fas fa-globe"></i> Browser</a></li>
+        <li class="nav-item"><a class="nav-link" id="partnersLink"><i class="fas fa-handshake"></i> Partners</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="footer-link" id="settingsLink"><i class="fas fa-gear"></i> Settings</div>
+        <div class="footer-link" id="creditsLink"><i class="fas fa-heart"></i> Credits</div>
+        <div class="footer-link" id="legalLink"><i class="fas fa-scale-balanced"></i> Legal</div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper" id="mainWrapper">
+      <!-- Home -->
+      <main class="main" id="homePage">
+        <header class="main-header">
+          <h1 class="main-title">sight.w</h1>
+          <p class="main-subtitle">ur spot for everything</p>
