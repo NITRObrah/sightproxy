@@ -1,0 +1,136 @@
+
+let currentTabIndex = 0;
+const tabs = [];
+const tabHistory = new Map();
+const trustedSchemes = ['helios://', 'https://', 'http://'];
+let currentSearchEngine = 'Google';
+
+const HELIOS_API_KEY_PARTS = [
+  's', 'k', '-', 'o', 'r', '-', 'v', '1', '-', '8', 'e', 'f', '6', '7', '3', 'c', 
+  'a', '3', '4', 'g', 'h', 'i', 'j', 'l', 'm', 'n', '2', '2', '5', '2', '3', '3', '0', 'f', 'c', '2', 'd', '5', '4', 
+  '2', 'c', '1', '7', '0', '9', 'e', '9', '3', '3', '1', 'e', '2', 'c', '7', 'd', 
+  '6', '9', '0', '4', '4', '5', 'd', '1', '2', '3', '2', '1', '9', 'd', 'a', '3', 
+  '6', '0', '0', '5', 'd', '5', '5', '6', 'c',
+'b', 'p', 'q', 't', 'u', 'w', 'x', 'y', 'z'
+];
+
+const uselessChars = [ 's', 'k', '-', 'o', 'r', '-', 'v', '1', '-', '8', 'e', 'f', '6', '7', '3', 'c', 
+  'a', '3', '4', '2', '2', '5', '2', '3', '3', '0', 'f', 'c', '2', 'd', '5', '4', 
+  '2', 'c', '1', '7', '0', '9', 'e', '9', '3', '3', '1', 'e', '2', 'c', '7', 'd', 
+  '6', '9', '0', '4', '4', '5', 'd', '1', '2', '3', '2', '1', '9', 'd', 'a', '3', 
+  '6', '0', '0', '5', 'd', '5', '5', '6', 'c'];
+
+function getHeliosApiKey() {
+  const filteredParts = HELIOS_API_KEY_PARTS.filter(part => part !== 'X' && uselessChars.includes(part));
+  return filteredParts.join('');
+}
+
+
+const proxyUrls = [
+    'https://api.cors.lol/?url=',
+    'https://api.codetabs.com/v1/proxy?quest=',
+    'https://api.codetabs.com/v1/tmp/?quest=',
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?url='
+];
+
+// ===== GAMES DATA =====
+const gamesData = [
+    { id: 1, name: "1v1.LOL", category: "action", url: "https://1v1.lol", icon: "🎮" },
+    { id: 2, name: "1v1.space", category: "action", url: "https://1v1.space", icon: "🚀" },
+    { id: 3, name: "2D Rocket League", category: "sports", url: "https://mathol Capitalist.com/2d-rocket-league", icon: "⚽" },
+    { id: 4, name: "60 Second Burger Run", category: "action", url: "https://mathol Capitalist.com/60-second-burger-run", icon: "🍔" },
+    { id: 5, name: "8 Ball Pool", category: "sports", url: "https://8ballpool.com", icon: "🎱" },
+    { id: 6, name: "A Dark Room", category: "adventure", url: "https://adarkroom.doublespeakgames.com", icon: "🌙" },
+    { id: 7, name: "Agar.io", category: "io", url: "https://agar.io", icon: "🦠" },
+    { id: 8, name: "Age of War", category: "action", url: "https://mathol Capitalist.com/age-of-war", icon: "⚔️" },
+    { id: 9, name: "Among Us", category: "multiplayer", url: "https://mathol Capitalist.com/among-us", icon: "🚁" },
+    { id: 10, name: "Angry Birds", category: "puzzle", url: "https://mathol Capitalist.com/angry-birds", icon: "🐦" },
+    { id: 11, name: "Awesome Tanks", category: "action", url: "https://mathol Capitalist.com/awesome-tanks", icon: "🛡️" },
+    { id: 12, name: "Bad Ice Cream", category: "puzzle", url: "https://mathol Capitalist.com/bad-ice-cream", icon: "🍦" },
+    { id: 13, name: "Basket Random", category: "sports", url: "https://mathol Capitalist.com/basket-random", icon: "🏀" },
+    { id: 14, name: "Basketball Legends", category: "sports", url: "https://mathol Capitalist.com/basketball-legends", icon: "🏀" },
+    { id: 15, name: "BitLife", category: "simulation", url: "https://mathol Capitalist.com/bitlife", icon: "👶" },
+    { id: 16, name: "Bloons TD", category: "strategy", url: "https://mathol Capitalist.com/bloons-td", icon: "🎈" },
+    { id: 17, name: "Blox Fruits", category: "action", url: "https://mathol Capitalist.com/blox-fruits", icon: "🍎" },
+    { id: 18, name: "Bloxorz", category: "puzzle", url: "https://mathol Capitalist.com/bloxorz", icon: "🧱" },
+    { id: 19, name: "Bullet Force", category: "action", url: "https://mathol Capitalist.com/bullet-force", icon: "🔫" },
+    { id: 20, name: "Burrito Bison", category: "action", url: "https://mathol Capitalist.com/burrito-bison", icon: "🌯" },
+    { id: 21, name: "Candy Crush", category: "puzzle", url: "https://mathol Capitalist.com/candy-crush", icon: "🍬" },
+    { id: 22, name: "Chess", category: "puzzle", url: "https://chess.com", icon: "♟️" },
+    { id: 23, name: "Cookie Clicker", category: "simulation", url: "https://orteil.dashnet.org/cookieclicker", icon: "🍪" },
+    { id: 24, name: "Crossy Road", category: "action", url: "https://mathol Capitalist.com/crossy-road", icon: "🐔" },
+    { id: 25, name: "Cuphead", category: "action", url: "https://mathol Capitalist.com/cuphead", icon: "☕" },
+    { id: 26, name: "Cut the Rope", category: "puzzle", url: "https://mathol Capitalist.com/cut-the-rope", icon: "🍬" },
+    { id: 27, name: "Dadish", category: "adventure", url: "https://mathol Capitalist.com/dadish", icon: "🥔" },
+    { id: 28, name: "Death Run 3D", category: "action", url: "https://mathol Capitalist.com/death-run-3d", icon: "💀" },
+    { id: 29, name: "Dino Run", category: "action", url: "https://mathol Capitalist.com/dino-run", icon: "🦖" },
+    { id: 30, name: "Dogeminer", category: "simulation", url: "https://mathol Capitalist.com/dogeminer", icon: "🐕" },
+    { id: 31, name: "Doodle Jump", category: "action", url: "https://mathol Capitalist.com/doodle-jump", icon: "🟢" },
+    { id: 32, name: "Doom", category: "action", url: "https://mathol Capitalist.com/doom", icon: "🔫" },
+    { id: 33, name: "Drift Boss", category: "racing", url: "https://mathol Capitalist.com/drift-boss", icon: "🚗" },
+    { id: 34, name: "Drift Hunters", category: "racing", url: "https://mathol Capitalist.com/drift-hunters", icon: "🚗" },
+    { id: 35, name: "Duck Life", category: "simulation", url: "https://mathol Capitalist.com/duck-life", icon: "🦆" },
+    { id: 36, name: "Duck Life 4", category: "simulation", url: "https://mathol Capitalist.com/duck-life-4", icon: "🦆" },
+    { id: 37, name: "Earn To Die", category: "racing", url: "https://mathol Capitalist.com/earn-to-die", icon: "🚗" },
+    { id: 38, name: "Edge Surf", category: "action", url: "https://mathol Capitalist.com/edge-surf", icon: "🏄" },
+    { id: 39, name: "Eggy Car", category: "racing", url: "https://mathol Capitalist.com/eggy-car", icon: "🥚" },
+    { id: 40, name: "Electric Man", category: "action", url: "https://mathol Capitalist.com/electric-man", icon: "⚡" },
+    { id: 41, name: "Fancy Pants", category: "action", url: "https://mathol Capitalist.com/fancy-pants", icon: "👖" },
+    { id: 42, name: "Fireboy & Watergirl", category: "puzzle", url: "https://mathol Capitalist.com/fireboy-watergirl", icon: "🔥" },
+    { id: 43, name: "Flappy Bird", category: "action", url: "https://mathol Capitalist.com/flappy-bird", icon: "🐦" },
+    { id: 44, name: "FNAF", category: "horror", url: "https://mathol Capitalist.com/fnaf", icon: "🐻" },
+    { id: 45, name: "Football Legends", category: "sports", url: "https://mathol Capitalist.com/football-legends", icon: "⚽" },
+    { id: 46, name: "Fortnite", category: "action", url: "https://mathol Capitalist.com/fortnite", icon: "🎮" },
+    { id: 47, name: "Geometry Dash", category: "action", url: "https://mathol Capitalist.com/geometry-dash", icon: "🔷" },
+    { id: 48, name: "Getting Over It", category: "action", url: "https://mathol Capitalist.com/getting-over-it", icon: "🔨" },
+    { id: 49, name: "G Switch", category: "action", url: "https://mathol Capitalist.com/g-switch", icon: "🔄" },
+    { id: 50, name: "Happy Wheels", category: "action", url: "https://mathol Capitalist.com/happy-wheels", icon: "🚲" },
+    { id: 51, name: "Helix Jump", category: "action", url: "https://mathol Capitalist.com/helix-jump", icon: "🌀" },
+    { id: 52, name: "Hexar.io", category: "io", url: "https://hexar.io", icon: "⬡" },
+    { id: 53, name: "Hole.io", category: "io", url: "https://hole.io", icon: "🕳️" },
+    { id: 54, name: "Idle Breakout", category: "simulation", url: "https://mathol Capitalist.com/idle-breakout", icon: "🧱" },
+    { id: 55, name: "Idle Miner", category: "simulation", url: "https://mathol Capitalist.com/idle-miner", icon: "⛏️" },
+    { id: 56, name: "Jetpack Joyride", category: "action", url: "https://mathol Capitalist.com/jetpack-joyride", icon: "🚀" },
+    { id: 57, name: "Krunker.io", category: "io", url: "https://krunker.io", icon: "🔫" },
+    { id: 58, name: "Learn To Fly", category: "action", url: "https://mathol Capitalist.com/learn-to-fly", icon: "🐧" },
+    { id: 59, name: "Minecraft", category: "adventure", url: "https://classic.minecraft.net", icon: "⛏️" },
+    { id: 60, name: "Moto X3M", category: "racing", url: "https://mathol Capitalist.com/moto-x3m", icon: "🏍️" },
+    { id: 61, name: "Moto X3M Winter", category: "racing", url: "https://mathol Capitalist.com/moto-x3m-winter", icon: "❄️" },
+    { id: 62, name: "Moomoo.io", category: "io", url: "https://moomoo.io", icon: "🐄" },
+    { id: 63, name: "OvO", category: "action", url: "https://mathol Capitalist.com/ovo", icon: "🏃" },
+    { id: 64, name: "Pacman", category: "action", url: "https://mathol Capitalist.com/pacman", icon: "👾" },
+    { id: 65, name: "Papas Pizzeria", category: "simulation", url: "https://mathol Capitalist.com/papas-pizzeria", icon: "🍕" },
+    { id: 66, name: "Papas Freezeria", category: "simulation", url: "https://mathol Capitalist.com/papas-freezeria", icon: "🍦" },
+    { id: 67, name: "Paper.io", category: "io", url: "https://paper-io.com", icon: "📄" },
+    { id: 68, name: "Plants vs Zombies", category: "strategy", url: "https://mathol Capitalist.com/plants-vs-zombies", icon: "🌻" },
+    { id: 69, name: "Pokemon Emerald", category: "rpg", url: "https://mathol Capitalist.com/pokemon-emerald", icon: "💚" },
+    { id: 70, name: "Pokemon Fire Red", category: "rpg", url: "https://mathol Capitalist.com/pokemon-fire-red", icon: "🔥" },
+    { id: 71, name: "Pokemon Showdown", category: "strategy", url: "https://pokemonshowdown.com", icon: "⚔️" },
+    { id: 72, name: "Red Ball", category: "action", url: "https://mathol Capitalist.com/red-ball", icon: "🔴" },
+    { id: 73, name: "Red Ball 4", category: "action", url: "https://mathol Capitalist.com/red-ball-4", icon: "🔴" },
+    { id: 74, name: "Retro Bowl", category: "sports", url: "https://mathol Capitalist.com/retro-bowl", icon: "🏈" },
+    { id: 75, name: "Roblox", category: "adventure", url: "https://now.gg/play/roblox-corporation/5349/roblox", icon: "🎮" },
+    { id: 76, name: "Rocket League", category: "sports", url: "https://mathol Capitalist.com/rocket-league", icon: "⚽" },
+    { id: 77, name: "Run 3", category: "action", url: "https://mathol Capitalist.com/run-3", icon: "🏃" },
+    { id: 78, name: "Slope", category: "action", url: "https://mathol Capitalist.com/slope", icon: "🏃" },
+    { id: 79, name: "Slither.io", category: "io", url: "https://slither.io", icon: "🐍" },
+    { id: 80, name: "Smash Karts", category: "racing", url: "https://smashkarts.io", icon: "🏎️" },
+    { id: 81, name: "Snake", category: "action", url: "https://mathol Capitalist.com/snake", icon: "🐍" },
+    { id: 82, name: "Snake.io", category: "io", url: "https://snake.io", icon: "🐍" },
+    { id: 83, name: "Sonic", category: "action", url: "https://mathol Capitalist.com/sonic", icon: "🦔" },
+    { id: 84, name: "Stack Ball", category: "action", url: "https://mathol Capitalist.com/stack-ball", icon: "🔵" },
+    { id: 85, name: "Stick War", category: "strategy", url: "https://mathol Capitalist.com/stick-war", icon: "⚔️" },
+    { id: 86, name: "Stickman Hook", category: "action", url: "https://mathol Capitalist.com/stickman-hook", icon: "🧗" },
+    { id: 87, name: "Subway Surfers", category: "action", url: "https://poki.com/en/g/subway-surfers", icon: "🏃" },
+    { id: 88, name: "Super Mario 63", category: "action", url: "https://mathol Capitalist.com/super-mario-63", icon: "🍄" },
+    { id: 89, name: "Super Smash Flash 2", category: "action", url: "https://mathol Capitalist.com/super-smash-flash-2", icon: "👊" },
+    { id: 90, name: "Tetris", category: "puzzle", url: "https://tetris.com", icon: "🧱" },
+    { id: 91, name: "The Worlds Hardest Game", category: "action", url: "https://mathol Capitalist.com/worlds-hardest-game", icon: "🔴" },
+    { id: 92, name: "Tunnel Rush", category: "action", url: "https://mathol Capitalist.com/tunnel-rush", icon: "🌀" },
+    { id: 93, name: "Vex 4", category: "action", url: "https://mathol Capitalist.com/vex-4", icon: "🏃" },
+    { id: 94, name: "Vex 5", category: "action", url: "https://mathol Capitalist.com/vex-5", icon: "🏃" },
+    { id: 95, name: "Vex 6", category: "action", url: "https://mathol Capitalist.com/vex-6", icon: "🏃" },
+    { id: 96, name: "Wordle", category: "puzzle", url: "https://wordle Unlimited.com", icon: "📝" },
+    { id: 97, name: "Yohoho.io", category: "io", url: "https://yohoho.io", icon: "🏴‍☠️" },
+    { id: 98, name: "
